@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<form action="/reset" method="POST">
+<div class="login">
+<div class="login-screen">
+<div class="app-title">
+<h1>Reset Password</h1>
+</div>
+<div class="login-form">
+
+<div class="control-group">
+				<input type="email" class="login-field" value="" placeholder="mail" name="reset_mail">
+<label class="login-field-icon fui-lock" for="login-pass"></label></div>
+
+<input type="submit" value="Send mail" class="btn btn-primary btn-large btn-block">
+
+</div>
+</div>
+</div>
+</form>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for message in messages %}
+{% if "Error" not in message[1]: %}
+<center>
+<div class="alert alert-info">
+                <strong style="color:MediumSeaGreen">Success! </strong> {{ message[1] }}</div>
+</center>
+{% endif %}
+{% if "Error" in message[1]: %}
+<center>
+<div class="alert alert-warning" style="color:Tomato">
+                {{ message[1] }}</div>
+</center>
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends "layout.html" %}
+
+{% block body %}
+{% if session['logged_in'] %}
+
+<div class="alert alert-info">
+                <strong style="color:MediumSeaGreen">Hello {{ user }}, you're logged in already!</div>
+
+<a href="/logout">Logout</a>
+
+{% else %}
+
+<form action="/login" method="POST">
+<div class="login">
+<div class="login-screen">
+<div class="app-title">
+<h1>Login</h1>
+</div>
+<div class="login-form">
+<div class="control-group">
+				<input type="text" class="login-field" value="" placeholder="username" name="username">
+<label class="login-field-icon fui-user" for="login-name"></label></div>
+<div class="control-group">
+				<input type="password" class="login-field" value="" placeholder="password" name="password">
+<label class="login-field-icon fui-lock" for="login-pass"></label></div>
+
+<a href="/form_reset" class="txt2 bo1 m-l-5">
+	Forgot password?
+</a>
+
+<input type="submit" value="Log in" class="btn btn-primary btn-large btn-block">
+<div class="w-full text-center p-t-55">
+	<span class="txt2">
+		Not a member?
+	</span>
+
+	<a href="/form_register" class="txt2 bo1">
+		Sign up now
+	</a>
+</div>
+
+</div>
+</div>
+</div>
+</form>
+{% endif %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for message in messages %}
+{% if "Error" not in message[1]: %}
+<center>
+<div class="alert alert-info">
+                <strong style="color:MediumSeaGreen">Success! </strong> {{ message[1] }}</div>
+</center>
+{% endif %}
+{% if "Error" in message[1]: %}
+<center>
+<div class="alert alert-warning" style="color:Tomato">
+                {{ message[1] }}</div>
+</center>
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+{% endblock %}
