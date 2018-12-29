@@ -1,4 +1,4 @@
-from flask import Flask, flash, redirect, render_template, request, session, abort
+from flask import Flask, flash, render_template, request, session, Response, jsonify
 import os
 from sqlalchemy.orm import sessionmaker
 from tabledef import *
@@ -33,6 +33,30 @@ def init():
 	engine = create_engine('sqlite:///users.db', echo=True)
 	app.config['SECRET_KEY'] = 'sampleflaskappdc123'
 	app.run(host='0.0.0.0',port=8080,debug=True)
+
+
+# Error handling
+@app.errorhandler(404)
+def fourohfour(e):
+    return jsonify({"error": str(e)}), 404
+
+@app.errorhandler(500)
+def fivehundred(e):
+    return jsonify({"error": str(e)}), 500
+
+@app.after_request
+def secure(response: Response):
+    if not request.path[-3:] in ["jpg", "png", "gif"]:
+        response.headers["X-Frame-Options"] = "SAMEORIGIN"
+        response.headers["X-Xss-Protection"] = "1; mode=block"
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["Content-Security-Policy"] = "script-src 'self' 'unsafe-inline';"
+        response.headers["Referrer-Policy"] = "no-referrer-when-downgrade"
+        response.headers["Feature-Policy"] = "geolocation 'self'; midi 'self'; sync-xhr 'self'; microphone 'self'; " \
+                                             "camera 'self'; magnetometer 'self'; gyroscope 'self'; speaker 'self'; " \
+                                             "fullscreen *; payment 'self'; "
+
+    return response
 
 
 @app.route("/")
@@ -91,6 +115,21 @@ def register():
 	POST_USERNAME = str(request.form['username'])
 	POST_PASSWORD = str(request.form['password'])
 	POST_MAIL = str(request.form['mail'])
+
+	if len(POST_USERNAME) == 0:
+        flash("Error: InvalidUserName")
+    if len(POST_PASSWORD) == 0:
+        flash("Error: InvalidPassword")
+   	if len(POST_MAIL) == 0:
+        flash("Error: InvalidEmailAddress")
+    if not len(POST_MAIL.split("@")) == 2:
+        flash("Error: InvalidEmailAddress")
+
+    if len(POST_USERNAME) < 4 or len(POST_USERNAME) > 25:
+        flash("Error: Make sure the user name is 4-25 letters/digits only")
+
+    if not all([x in string.ascii_letters or x in string.digits for x in POST_USERNAME]):
+        flash("Error: InvalidUserName")
 
 	Session = sessionmaker(bind=engine)
 	s = Session()
