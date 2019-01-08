@@ -44,21 +44,6 @@ def fourohfour(e):
 def fivehundred(e):
     return jsonify({"error": str(e)}), 500
 
-@app.after_request
-def secure(response: Response):
-    if not request.path[-3:] in ["jpg", "png", "gif"]:
-        response.headers["X-Frame-Options"] = "SAMEORIGIN"
-        response.headers["X-Xss-Protection"] = "1; mode=block"
-        response.headers["X-Content-Type-Options"] = "nosniff"
-        response.headers["Content-Security-Policy"] = "script-src 'self' 'unsafe-inline';"
-        response.headers["Referrer-Policy"] = "no-referrer-when-downgrade"
-        response.headers["Feature-Policy"] = "geolocation 'self'; midi 'self'; sync-xhr 'self'; microphone 'self'; " \
-                                             "camera 'self'; magnetometer 'self'; gyroscope 'self'; speaker 'self'; " \
-                                             "fullscreen *; payment 'self'; "
-
-    return response
-
-
 @app.route("/")
 def home():
 	return render_template('index.html')
